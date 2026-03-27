@@ -4,10 +4,11 @@ dotenv.config();
 import express from "express";
 import mongoose from "mongoose";
 import userRouter from "./user/user.routes.js";
+import transactionRouter from "./transaction/transaction.routes.js";
+import dashboardRouter from "./dashboard/dashboard.routes.js";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import transactionRouter from "./transaction/transaction.routes.js";
 
 mongoose
   .connect(process.env.DB_URL)
@@ -31,8 +32,9 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/api/user", userRouter);
 app.use("/api/transactions", transactionRouter);
+app.use("/api/dashboard", dashboardRouter);
 
-// ✅ FIXED PORT
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
+const PORT = 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

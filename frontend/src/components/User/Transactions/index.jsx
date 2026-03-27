@@ -2,25 +2,66 @@ import { Card, Button, Input, Table, Tag, Space, Tooltip, Select, Form, Modal, m
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import dayjs from "dayjs";
+import { http } from "../../../utils/http";
+import useSWR from "swr";
+import { fetcher } from "../../../utils/fetcher";
 
 const { Item } = Form;
 
 const Transactions = () => {
     const [transactionForm] = Form.useForm();
+    const { data: transactions, error, mutate } = useSWR("/api/transactions", fetcher);
 
     const [edit, setEdit] = useState(null);
     const [modal, setModal] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const onFinish = (values) => {
+    const onFinish = async (values) => {
         setLoading(true);
-        // Simulate an API call
-        setTimeout(() => {
-            message.success("Transaction added successfully!");
-            setLoading(false);
+        try {
+            if (edit) {
+                await http.put(`/api/transactions/${edit._id}`, values);
+                message.success("Transaction updated successfully!");
+            } else {
+                await http.post("/api/transactions", values);
+                message.success("Transaction added successfully!");
+            }
+            mutate();
             setModal(false);
             transactionForm.resetFields();
-        }, 1000);
+        } catch (error) {
+            message.error(error?.response?.data?.message || "Something went wrong");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleEdit = (record) => {
+        setEdit(record);
+        transactionForm.setFieldsValue({
+            ...record,
+            date: dayjs(record.date),
+        });
+        setModal(true);
+    };
+
+    const handleDelete = async (id) => {
+        Modal.confirm({
+            title: "Do you want to delete the transaction?",
+            content: "This action cannot be undone.",
+            okText: "Yes, Delete",
+            okType: "danger",
+            cancelText: "No",
+            onOk: async () => {
+                try {
+                    await http.delete(`/api/transactions/${id}`);
+                    message.success("Transaction deleted successfully!");
+                    mutate();
+                } catch (error) {
+                    message.error(error?.response?.data?.message || "Something went wrong");
+                }
+            },
+        });
     };
 
 
@@ -61,17 +102,19 @@ const Transactions = () => {
             title: 'Date',
             dataIndex: 'date',
             key: 'date',
+            render: (date) => dayjs(date).format('YYYY-MM-DD'),
         },
         {
             title: 'Action',
             key: 'action',
-            render: () => (
+            render: (_, record) => (
                 <Space size="small">
                     <Tooltip title="Edit">
                         <Button
                             type="text"
                             icon={<EditOutlined style={{ color: '#52c41a' }} />}
                             className="bg-green-50 hover:bg-green-100"
+                            onClick={() => handleEdit(record)}
                         />
                     </Tooltip>
                     <Tooltip title="Delete">
@@ -80,49 +123,11 @@ const Transactions = () => {
                             danger
                             icon={<DeleteOutlined style={{ color: '#ff4d4f' }} />}
                             className="bg-red-50 hover:bg-red-100"
+                            onClick={() => handleDelete(record._id)}
                         />
                     </Tooltip>
                 </Space>
             ),
-        },
-    ];
-
-    const data = [
-        {
-            key: '1',
-            type: 'Debit',
-            title: 'Lunch at Restaurant',
-            amount: 1200,
-            paymentMethod: 'Credit Card',
-            notes: 'Business meeting with client',
-            date: '2024-03-24',
-        },
-        {
-            key: '2',
-            type: 'Credit',
-            title: 'Salary Deposit',
-            amount: 75000,
-            paymentMethod: 'Bank Transfer',
-            notes: 'Monthly salary for March',
-            date: '2024-03-01',
-        },
-        {
-            key: '3',
-            type: 'Debit',
-            title: 'Groceries',
-            amount: 3500,
-            paymentMethod: 'UPI',
-            notes: 'Monthly grocery shopping',
-            date: '2024-03-20',
-        },
-        {
-            key: '4',
-            type: 'Debit',
-            title: 'Netflix Subscription',
-            amount: 649,
-            paymentMethod: 'Debit Card',
-            notes: 'Monthly subscription fee',
-            date: '2024-03-15',
         },
     ];
 
@@ -143,7 +148,11 @@ const Transactions = () => {
                                 type="primary"
                                 icon={<PlusOutlined />}
                                 className="!font-bold bg-blue-600 hover:bg-blue-700 border-none h-10 px-6 rounded-md"
-                                onClick={()=>setModal(true)}
+                                onClick={() => {
+                                    setEdit(null);
+                                    transactionForm.resetFields();
+                                    setModal(true);
+                                }}
                             >
                                 Add new transaction
                             </Button>
@@ -153,7 +162,9 @@ const Transactions = () => {
                     <div style={{ overflowX: 'auto' }}>
                         <Table
                             columns={columns}
-                            dataSource={data}
+                            dataSource={transactions || []}
+                            rowKey="_id"
+                            loading={!transactions && !error}
                             pagination={{
                                 pageSize: 10,
                                 showSizeChanger: true,
@@ -167,7 +178,7 @@ const Transactions = () => {
             <Modal
                 open={modal}
                 onCancel={() => setModal(false)}
-                title="Add new transaction"
+                title={edit ? "Edit transaction" : "Add new transaction"}
                 footer={null}
             >
                 <Form
@@ -238,9 +249,9 @@ const Transactions = () => {
                             loading={loading}
                             type="text"
                             htmlType="submit"
-                            className="!font-semibold !text-white !bg-blue-500"
+                            className={`!font-semibold !text-white ${edit ? "!bg-red-500 hover:!bg-red-600" : "!bg-blue-500 hover:!bg-blue-600"}`}
                         >
-                            Submit
+                            {edit ? "Update" : "Submit"}
                         </Button>
                     </Item>
                 </Form>

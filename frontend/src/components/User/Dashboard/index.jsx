@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, Card, Statistic, Typography, Divider } from "antd";
+import { Row, Col, Card, Statistic, Typography, Spin } from "antd";
 import {
   ArrowUpOutlined,
   ArrowDownOutlined,
@@ -16,29 +16,32 @@ import {
   AreaChart,
   Area,
 } from "recharts";
+import useSWR from "swr";
+import { fetcher } from "../../../utils/fetcher";
 
 const { Title, Text } = Typography;
 
-const data = [
-  { name: "2025-11-24", amount: 35000 },
-  { name: "2025-11-26", amount: 75000 },
-  { name: "2025-11-28", amount: 12000 },
-  { name: "2025-11-30", amount: 3000 },
-  { name: "2025-12-02", amount: 28000 },
-  { name: "2025-12-04", amount: 15000 },
-  { name: "2025-12-06", amount: 32000 },
-  { name: "2025-12-08", amount: 18000 },
-  { name: "2025-12-10", amount: 38000 },
-  { name: "2025-12-12", amount: 15000 },
-  { name: "2025-12-14", amount: 42000 },
-  { name: "2025-12-16", amount: 28000 },
-  { name: "2025-12-18", amount: 48000 },
-  { name: "2025-12-20", amount: 32000 },
-  { name: "2025-12-22", amount: 38000 },
-  { name: "2025-12-23", amount: 12000 },
-];
-
 const Dashboard = () => {
+  const { data: report, error, isLoading } = useSWR("/api/dashboard/report", fetcher);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <Text type="danger">Error loading dashboard data. Please try again later.</Text>
+      </div>
+    );
+  }
+
+  const { summary, chartData } = report || { summary: {}, chartData: [] };
+  
   return (
     <div className="p-2 md:p-6 bg-[#f0f2f5] min-h-screen">
       <Row gutter={[16, 16]}>
@@ -46,52 +49,39 @@ const Dashboard = () => {
           <Card bordered={false} className="shadow-sm rounded-lg border-l-4 border-[#ff4d4f]">
             <Statistic
               title={<Text strong className="text-[#ff4d4f]"><TransactionOutlined /> Transaction</Text>}
-              value={100}
-              suffix="T"
+              value={summary.totalTransactions}
               valueStyle={{ color: "#3f3f3f", fontWeight: "bold" }}
             />
-            <div className="mt-2 p-1 bg-[#ff4d4f10] inline-block rounded">
-              <Text type="secondary" className="text-xs">200 Estimate</Text>
-            </div>
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <Card bordered={false} className="shadow-sm rounded-lg border-l-4 border-[#52c41a]">
             <Statistic
               title={<Text strong className="text-[#52c41a]"><ArrowUpOutlined /> Total Credit</Text>}
-              value={100}
-              suffix="T"
+              value={summary.totalCredit}
+              prefix="₹"
               valueStyle={{ color: "#3f3f3f", fontWeight: "bold" }}
             />
-            <div className="mt-2 p-1 bg-[#52c41a10] inline-block rounded">
-              <Text type="secondary" className="text-xs">200 Estimate</Text>
-            </div>
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <Card bordered={false} className="shadow-sm rounded-lg border-l-4 border-[#fa8c16]">
             <Statistic
               title={<Text strong className="text-[#fa8c16]"><ArrowDownOutlined /> Total Debit</Text>}
-              value={100}
-              suffix="T"
+              value={summary.totalDebit}
+              prefix="₹"
               valueStyle={{ color: "#3f3f3f", fontWeight: "bold" }}
             />
-            <div className="mt-2 p-1 bg-[#fa8c1610] inline-block rounded">
-              <Text type="secondary" className="text-xs">200 Estimate</Text>
-            </div>
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <Card bordered={false} className="shadow-sm rounded-lg border-l-4 border-[#1890ff]">
             <Statistic
               title={<Text strong className="text-[#1890ff]"><WalletOutlined /> Balance</Text>}
-              value={100}
-              suffix="T"
+              value={summary.balance}
+              prefix="₹"
               valueStyle={{ color: "#3f3f3f", fontWeight: "bold" }}
             />
-            <div className="mt-2 p-1 bg-[#1890ff10] inline-block rounded">
-              <Text type="secondary" className="text-xs">200 Estimate</Text>
-            </div>
           </Card>
         </Col>
       </Row>
@@ -110,7 +100,7 @@ const Dashboard = () => {
           >
             <div style={{ width: "100%", height: 350 }}>
               <ResponsiveContainer>
-                <AreaChart data={data}>
+                <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="colorAmt" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#1890ff" stopOpacity={0.1}/>
