@@ -31,10 +31,11 @@ const otpStore = {};
 
 export const sendEmail = async (req, res) => {
   try {
-    const { email } = req.body;
+    let { email } = req.body;
     if (!email) {
       return res.status(400).json({ message: "Email is required" });
     }
+    email = email.toLowerCase().trim();
 
     // check if user already exists
     const existingUser = await UserModel.findOne({ email });
@@ -127,10 +128,11 @@ export const forgotPassword = async (req, res) => {
 
 export const verifyOTP = async (req, res) => {
   try {
-    const { email, otp } = req.body;
+    let { email, otp } = req.body;
     if (!email || !otp) {
       return res.status(400).json({ message: "Email and OTP are required" });
     }
+    email = email.toLowerCase().trim();
 
     // check if OTP matches the stored OTP for this email
     const storedOTP = otpStore[email];
@@ -157,10 +159,11 @@ export const verifyOTP = async (req, res) => {
 
 export const signupWithOTP = async (req, res) => {
   try {
-    const { email, otp, ...userData } = req.body;
+    let { email, otp, ...userData } = req.body;
     if (!email || !otp) {
       return res.status(400).json({ message: "Email and OTP are required" });
     }
+    email = email.toLowerCase().trim();
 
     // verify OTP first
     const storedOTP = otpStore[email];

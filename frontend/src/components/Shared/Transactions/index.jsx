@@ -3,7 +3,7 @@ import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from "@ant
 import { useState } from "react";
 import dayjs from "dayjs";
 import { http } from "../../../utils/http";
-import useSWR from "swr";
+import useSWR, { mutate as globalMutate } from "swr";
 import { fetcher } from "../../../utils/fetcher";
 
 const { Item } = Form;
@@ -27,7 +27,9 @@ const Transactions = () => {
                 message.success("Transaction added successfully!");
             }
             mutate();
+            globalMutate("/api/dashboard/report");
             setModal(false);
+            setEdit(null);
             transactionForm.resetFields();
         } catch (error) {
             message.error(error?.response?.data?.message || "Something went wrong");
@@ -57,6 +59,7 @@ const Transactions = () => {
                     await http.delete(`/api/transactions/${id}`);
                     message.success("Transaction deleted successfully!");
                     mutate();
+                    globalMutate("/api/dashboard/report");
                 } catch (error) {
                     message.error(error?.response?.data?.message || "Something went wrong");
                 }
@@ -177,7 +180,11 @@ const Transactions = () => {
             </div>
             <Modal
                 open={modal}
-                onCancel={() => setModal(false)}
+                onCancel={() => {
+                    setModal(false);
+                    setEdit(null);
+                    transactionForm.resetFields();
+                }}
                 title={edit ? "Edit transaction" : "Add new transaction"}
                 footer={null}
             >

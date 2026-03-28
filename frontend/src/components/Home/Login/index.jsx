@@ -17,7 +17,11 @@ const Login = () => {
 
   useEffect(() => {
     if (session) {
-      navigate("/app/user", { replace: true });
+      if (session.role === "admin") {
+        navigate("/app/admin", { replace: true });
+      } else {
+        navigate("/app/user", { replace: true });
+      }
     }
   }, [session, navigate]);
 
@@ -30,14 +34,18 @@ const Login = () => {
       setLoading(true);
       const { email, password } = values;
       const { data } = await http.post("/api/user/login", { email, password });
-      const {role} = data;
-      if(role === "admin"){
-        await mutate("/api/user/session");
-        return toast.success(data.message || "Admin try to login");
+      const { role } = data;
+      
+      await mutate("/api/user/session");
+
+      if (role === "admin") {
+        toast.success("Admin successfully logged in");
+        return navigate("/app/admin", { replace: true });
       }
-      if(role === "user"){
-        await mutate("/api/user/session");
-        return navigate("/app/user");
+      
+      if (role === "user") {
+        toast.success(data.message || "User successfully logged in");
+        return navigate("/app/user", { replace: true });
       }
       
     } catch (error) {

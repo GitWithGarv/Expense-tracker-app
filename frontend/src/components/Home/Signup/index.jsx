@@ -15,12 +15,6 @@ const Signup = () => {
   const { session } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (session) {
-      navigate("/app/user", { replace: true });
-    }
-  }, [session, navigate]);
-
   const [formData, setFormData] = useState(null);
   const [otp, setOtp] = useState(null);
   const [loading, setLoading] = useState(false);
