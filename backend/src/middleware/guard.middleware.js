@@ -56,3 +56,23 @@ export const AdminUserGuard = async (req, res, next) => {
     return invalid(res);
   }
 };
+
+export const AdminOnlyGuard = async (req, res, next) => {
+  try {
+    const { authToken } = req.cookies;
+
+    if (!authToken) {
+      return invalid(res);
+    }
+    const payload = await jwt.verify(authToken, process.env.AUTH_SECRET);
+
+    if (payload.role !== "admin")
+      return invalid(res);
+
+    req.user = payload;
+    
+    next();
+  } catch (err) {
+    return invalid(res);
+  }
+};

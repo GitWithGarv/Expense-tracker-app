@@ -104,7 +104,7 @@ const Signup = () => {
                     type="text"
                     htmlType="submit"
                     block
-                    className="bg-[#FF735C]! text-white! font-bold!"
+                    className="!bg-[#FF735C] !text-white !font-bold"
                   >
                     Verify now
                   </Button>
@@ -133,10 +133,10 @@ const Signup = () => {
 
                 <Item
                   name="email"
-                  label="Username"
-                  rules={[{ required: true }]}
+                  label="Email"
+                  rules={[{ required: true, type: 'email' }]}
                 >
-                  <Input prefix={<UserOutlined />} placeholder="Username" />
+                  <Input prefix={<UserOutlined />} placeholder="Email" />
                 </Item>
 
                 <Item
@@ -156,7 +156,7 @@ const Signup = () => {
                     type="text"
                     htmlType="submit"
                     block
-                    className="bg-[#FF735C]! text-white! font-bold!"
+                    className="!bg-[#FF735C] !text-white !font-bold"
                   >
                     SignUp
                   </Button>
@@ -170,7 +170,7 @@ const Signup = () => {
               <Link
                 style={{ textDecoration: "underline" }}
                 to="/"
-                className="text-[#FF735C]! font-bold!"
+                className="!text-[#FF735C] !font-bold"
               >
                 Already have an account?
               </Link>

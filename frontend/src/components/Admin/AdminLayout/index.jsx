@@ -5,11 +5,11 @@ import {
   LogoutOutlined,
   ExclamationCircleOutlined,
   DashboardOutlined,
-  DollarOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import React, { useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import Loader from "../../Shared";
+import Loader from "../../Shared/index.jsx";
 import { useAuth } from "../../../contexts/AuthContext";
 
 const { Sider, Header, Content } = Layout;
@@ -18,23 +18,23 @@ const { Text } = Typography;
 
 const items = [
   {
-    key: "/app/user/dashboard",
+    key: "/app/admin/dashboard",
     label: "Dashboard",
     icon: <DashboardOutlined />,
   },
   {
-    key: "/app/user/report",
+    key: "/app/admin/report",
     label: "Reports",
     icon: <BarChartOutlined />,
   },
   {
-    key: "/app/user/transactions",
-    label: "Transactions",
-    icon: <DollarOutlined />,
+    key: "/app/admin/users",
+    label: "Users",
+    icon: <UserOutlined />,
   },
 ];
 
-const UserLayout = () => {
+const AdminLayout = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
@@ -79,8 +79,8 @@ const UserLayout = () => {
           />
           {!collapsed && (
             <div className="text-center">
-              <Text strong className="text-white block">{session?.fullname || "User"}</Text>
-              <Text type="secondary" className="text-xs text-blue-300">{session?.role || "Member"}</Text>
+              <Text strong className="text-white block capitalize">{session?.fullname || "User"}</Text>
+              <Text type="secondary" className="text-xs text-blue-300 capitalize">{session?.role || "Member"}</Text>
             </div>
           )}
         </div>
@@ -103,7 +103,7 @@ const UserLayout = () => {
             className="text-lg hover:text-blue-500 transition-colors"
           />
           <div className="flex items-center gap-4">
-            <Text type="secondary" className="hidden sm:inline">Welcome back, <strong>{session?.fullname}</strong></Text>
+            <Text type="secondary" className="hidden sm:inline">Welcome back, <strong className="capitalize">{session?.fullname}</strong></Text>
             <Button 
               type="text"
               danger
@@ -124,4 +124,4 @@ const UserLayout = () => {
   );
 };
 
-export default UserLayout;
+export default AdminLayout;

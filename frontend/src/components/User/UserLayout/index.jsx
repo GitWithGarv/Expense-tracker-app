@@ -9,7 +9,7 @@ import {
 } from "@ant-design/icons";
 import React, { useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import Loader from "../../Shared";
+import Loader from "../../Shared/index.jsx";
 import { useAuth } from "../../../contexts/AuthContext";
 
 const { Sider, Header, Content } = Layout;

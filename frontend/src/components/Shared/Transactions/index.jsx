@@ -5,10 +5,12 @@ import dayjs from "dayjs";
 import { http } from "../../../utils/http";
 import useSWR, { mutate as globalMutate } from "swr";
 import { fetcher } from "../../../utils/fetcher";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const { Item } = Form;
 
 const Transactions = () => {
+    const { session } = useAuth();
     const [transactionForm] = Form.useForm();
     const { data: transactions, error, mutate } = useSWR("/api/transactions", fetcher);
 
@@ -69,6 +71,17 @@ const Transactions = () => {
 
 
     const columns = [
+        ...(session?.role === "admin" ? [{
+            title: 'User',
+            dataIndex: 'user',
+            key: 'user',
+            render: (user) => (
+                <div className="flex flex-col">
+                    <span className="font-medium capitalize">{user?.fullname || "N/A"}</span>
+                    <span className="text-xs text-gray-500">{user?.email || "N/A"}</span>
+                </div>
+            )
+        }] : []),
         {
             title: 'Transaction Type',
             dataIndex: 'type',

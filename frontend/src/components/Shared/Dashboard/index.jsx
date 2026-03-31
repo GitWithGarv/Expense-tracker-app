@@ -6,6 +6,9 @@ import {
   TransactionOutlined,
   WalletOutlined,
   CalendarOutlined,
+  DotChartOutlined,
+  PlusCircleOutlined,
+  MinusCircleOutlined,
 } from "@ant-design/icons";
 import {
   XAxis,
@@ -42,55 +45,75 @@ const Dashboard = () => {
 
   const { summary, chartData } = report || { summary: {}, chartData: [] };
   
+  const StatCard = ({ title, value, estimate, icon, color, bgColor }) => (
+    <Card bordered={false} className="shadow-sm rounded-xl overflow-hidden">
+      <div className="flex items-center gap-4">
+        <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white text-xl ${bgColor}`}>
+          {icon}
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center justify-between mb-1">
+            <Text strong className={`text-sm ${color}`}>{title}</Text>
+            <Text className={`text-xl font-bold ${color}`}>{value}</Text>
+          </div>
+          <div className="flex items-center justify-between">
+            <Text type="secondary" className="text-xs">{estimate} Estimate</Text>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+
   return (
-    <div className="p-2 md:p-6 bg-[#f0f2f5] min-h-screen">
-      <Row gutter={[16, 16]}>
+    <div className="p-4 md:p-8 bg-[#f8f9fa] min-h-screen">
+      <Row gutter={[24, 24]}>
         <Col xs={24} sm={12} lg={6}>
-          <Card bordered={false} className="shadow-sm rounded-lg border-l-4 border-[#ff4d4f]">
-            <Statistic
-              title={<Text strong className="text-[#ff4d4f]"><TransactionOutlined /> Transaction</Text>}
-              value={summary.totalTransactions}
-              valueStyle={{ color: "#3f3f3f", fontWeight: "bold" }}
-            />
-          </Card>
+          <StatCard 
+            title="Transaction"
+            value={`${summary.totalTransactions} T`}
+            estimate={`${summary.totalTransactions} T`}
+            icon={<DotChartOutlined />}
+            color="text-[#e91e63]"
+            bgColor="bg-[#e91e63]"
+          />
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card bordered={false} className="shadow-sm rounded-lg border-l-4 border-[#52c41a]">
-            <Statistic
-              title={<Text strong className="text-[#52c41a]"><ArrowUpOutlined /> Total Credit</Text>}
-              value={summary.totalCredit}
-              prefix="₹"
-              valueStyle={{ color: "#3f3f3f", fontWeight: "bold" }}
-            />
-          </Card>
+          <StatCard 
+            title="Total Credit"
+            value={`${summary.totalCredit} ₹`}
+            estimate={`${summary.totalCredit} ₹`}
+            icon={<PlusCircleOutlined />}
+            color="text-[#28a745]"
+            bgColor="bg-[#28a745]"
+          />
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card bordered={false} className="shadow-sm rounded-lg border-l-4 border-[#fa8c16]">
-            <Statistic
-              title={<Text strong className="text-[#fa8c16]"><ArrowDownOutlined /> Total Debit</Text>}
-              value={summary.totalDebit}
-              prefix="₹"
-              valueStyle={{ color: "#3f3f3f", fontWeight: "bold" }}
-            />
-          </Card>
+          <StatCard 
+            title="Total Debit"
+            value={`${summary.totalDebit} ₹`}
+            estimate={`${summary.totalDebit} ₹`}
+            icon={<MinusCircleOutlined />}
+            color="text-[#fd7e14]"
+            bgColor="bg-[#fd7e14]"
+          />
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card bordered={false} className="shadow-sm rounded-lg border-l-4 border-[#1890ff]">
-            <Statistic
-              title={<Text strong className="text-[#1890ff]"><WalletOutlined /> Balance</Text>}
-              value={summary.balance}
-              prefix="₹"
-              valueStyle={{ color: "#3f3f3f", fontWeight: "bold" }}
-            />
-          </Card>
+          <StatCard 
+            title="Balance"
+            value={`${summary.balance} ₹`}
+            estimate={`${summary.balance} ₹`}
+            icon={<WalletOutlined />}
+            color="text-[#6f42c1]"
+            bgColor="bg-[#6f42c1]"
+          />
         </Col>
       </Row>
 
-      <Row className="mt-6">
+      <Row className="mt-8">
         <Col span={24}>
           <Card 
             bordered={false} 
-            className="shadow-sm rounded-lg"
+            className="shadow-md rounded-xl"
             title={
               <div className="flex items-center gap-2 py-2">
                 <CalendarOutlined className="text-blue-500" />
@@ -98,12 +121,12 @@ const Dashboard = () => {
               </div>
             }
           >
-            <div style={{ width: "100%", height: 350 }}>
+            <div style={{ width: "100%", height: 400 }}>
               <ResponsiveContainer>
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="colorAmt" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#1890ff" stopOpacity={0.1}/>
+                      <stop offset="5%" stopColor="#1890ff" stopOpacity={0.2}/>
                       <stop offset="95%" stopColor="#1890ff" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
@@ -121,17 +144,17 @@ const Dashboard = () => {
                     tick={{ fontSize: 11, fill: '#8c8c8c' }}
                   />
                   <Tooltip 
-                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 24px rgba(0,0,0,0.1)' }}
                   />
                   <Area 
                     type="monotone" 
                     dataKey="amount" 
                     stroke="#1890ff" 
-                    strokeWidth={3}
+                    strokeWidth={4}
                     fillOpacity={1} 
                     fill="url(#colorAmt)" 
-                    dot={{ r: 4, fill: "#fff", stroke: "#1890ff", strokeWidth: 2 }}
-                    activeDot={{ r: 6 }}
+                    dot={{ r: 5, fill: "#fff", stroke: "#1890ff", strokeWidth: 3 }}
+                    activeDot={{ r: 7 }}
                   />
                 </AreaChart>
               </ResponsiveContainer>

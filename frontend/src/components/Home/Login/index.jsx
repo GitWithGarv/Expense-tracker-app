@@ -34,19 +34,10 @@ const Login = () => {
       setLoading(true);
       const { email, password } = values;
       const { data } = await http.post("/api/user/login", { email, password });
-      const { role } = data;
       
       await mutate("/api/user/session");
 
-      if (role === "admin") {
-        toast.success("Admin successfully logged in");
-        return navigate("/app/admin", { replace: true });
-      }
-      
-      if (role === "user") {
-        toast.success(data.message || "User successfully logged in");
-        return navigate("/app/user", { replace: true });
-      }
+      toast.success(data.message || "Successfully logged in");
       
     } catch (error) {
       console.error(error);
@@ -77,8 +68,8 @@ const Login = () => {
             onFinish={onFinish}
             form={loginForm}
           >
-            <Item name="email" label="Username" rules={[{ required: true }]}>
-              <Input prefix={<UserOutlined />} placeholder="Username" />
+            <Item name="email" label="Email" rules={[{ required: true, type: 'email' }]}>
+              <Input prefix={<UserOutlined />} placeholder="Email" />
             </Item>
 
             <Item name="password" label="Password" rules={[{ required: true }]}>
@@ -93,7 +84,7 @@ const Login = () => {
                 type="text"
                 htmlType="submit"
                 block
-                className="bg-[#FF735C]! text-white! font-bold!"
+                className="!bg-[#FF735C] !text-white !font-bold"
                 loading={loading}
               >
                 Login
@@ -105,7 +96,7 @@ const Login = () => {
             <Link
               style={{ textDecoration: "underline" }}
               to="/forgot-password"
-              className="text-[#FF735C]! font-bold!"
+              className="!text-[#FF735C] !font-bold"
             >
               Forgot Password
             </Link>
@@ -114,7 +105,7 @@ const Login = () => {
             <Link
               style={{ textDecoration: "underline" }}
               to="/signup"
-              className="text-[#FF735C]! font-bold!"
+              className="!text-[#FF735C] !font-bold"
             >
               Don't have an account?
             </Link>

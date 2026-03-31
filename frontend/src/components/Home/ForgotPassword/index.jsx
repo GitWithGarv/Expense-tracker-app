@@ -23,7 +23,7 @@ const ForgotPassword = () => {
   useEffect(() => {
     const tok = params.get("token");
     if (tok) {
-      setToken(tok);
+      checkToken(tok);
     } else {
       setToken(null);
     }
