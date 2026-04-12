@@ -38,27 +38,22 @@ const invalid = async (res) => {
 };
 
 export const AdminUserGuard = async (req, res, next) => {
-  console.log("AdminUserGuard: Checking for authToken...");
   try {
     const { authToken } = req.cookies;
 
     if (!authToken) {
-      console.log("AdminUserGuard: No authToken found!");
       return invalid(res);
     }
     const payload = await jwt.verify(authToken, process.env.AUTH_SECRET);
 
     if (payload.role !== "user" && payload.role !== "admin") {
-      console.log("AdminUserGuard: Invalid role:", payload.role);
       return invalid(res);
     }
 
     req.user = payload;
-    console.log("AdminUserGuard: Auth successful for user:", payload.email);
     
     next();
   } catch (err) {
-    console.log("AdminUserGuard: Error verifying token:", err.message);
     return invalid(res);
   }
 };

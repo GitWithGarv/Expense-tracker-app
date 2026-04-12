@@ -14,9 +14,7 @@ const COLORS = {
 };
 
 const Report = () => {
-  const { data: testData } = useSWR("/api/dashboard/test", fetcher);
-  console.log("Test Data:", testData);
-  const { data, error, isLoading } = useSWR("/api/dashboard/detailed-report", fetcher);
+  const { data, error, isLoading } = useSWR("/api/dashboard/charts", fetcher);
 
   if (isLoading) {
     return (

@@ -29,7 +29,8 @@ const Transactions = () => {
                 message.success("Transaction added successfully!");
             }
             mutate();
-            globalMutate("/api/dashboard/report");
+            globalMutate("/api/dashboard/summary");
+            globalMutate("/api/dashboard/charts");
             setModal(false);
             setEdit(null);
             transactionForm.resetFields();

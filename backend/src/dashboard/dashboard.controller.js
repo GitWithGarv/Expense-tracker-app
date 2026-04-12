@@ -70,35 +70,28 @@ export const getDashboardSummary = async (req, res) => {
 };
 
 export const getReportData = async (req, res) => {
-    console.log("getReportData: Starting data processing...");
     try {
         const { id: userId, role } = req.user;
-        console.log("getReportData: User ID:", userId, "Role:", role);
         let transactions = [];
 
         if (role === "admin") {
             // Fetch all users with status true (both admins and users)
-            console.log("getReportData: Admin role detected, fetching active users...");
             const activeUsers = await UserModel.find({ status: true }).select("_id");
             const activeUserIds = activeUsers.map(u => u._id);
-            console.log("getReportData: Found", activeUserIds.length, "active users.");
             
             // Get transactions for all active users
             transactions = await Transaction.find({ user: { $in: activeUserIds } });
         } else {
             // Check if current user is active
-            console.log("getReportData: User role detected, checking user status...");
             const user = await UserModel.findById(userId);
             
             // If user not found or inactive, return empty results
             if (!user || !user.status) {
-                console.log("getReportData: User not found or inactive.");
                 return res.json({ last30: [], last7: [], last1: [] });
             }
             
             transactions = await Transaction.find({ user: userId });
         }
-        console.log("getReportData: Found", (transactions || []).length, "total transactions.");
 
         const processData = (days) => {
             const startDate = dayjs().subtract(days, 'day').startOf('day');
@@ -133,10 +126,8 @@ export const getReportData = async (req, res) => {
             last1: processData(1),
         };
 
-        console.log("getReportData: Returning result data.");
         return res.json(result);
     } catch (error) {
-        console.error("Critical Report Data Error:", error);
         return res.status(500).json({ 
             message: "Internal Server Error in Reports",
             error: error.message 

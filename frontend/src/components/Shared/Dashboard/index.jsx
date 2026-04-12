@@ -25,7 +25,7 @@ import { fetcher } from "../../../utils/fetcher";
 const { Title, Text } = Typography;
 
 const Dashboard = () => {
-  const { data: report, error, isLoading } = useSWR("/api/dashboard/report", fetcher);
+  const { data: report, error, isLoading } = useSWR("/api/dashboard/summary", fetcher);
 
   if (isLoading) {
     return (
