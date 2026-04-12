@@ -26,7 +26,7 @@ const Signup = () => {
       const { email } = values;
       const { data } = await http.post("/api/user/send-mail", { email });
 
-      message.success(
+      toast.success(
         data.message || "OTP sent successfully"
       );
       console.log("send-mail response", data);

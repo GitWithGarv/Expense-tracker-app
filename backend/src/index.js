@@ -34,11 +34,15 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.get("/", (req, res) => {
+  res.send("Expense Tracker API is running!");
+});
+
 app.use("/api/user", userRouter);
 app.use("/api/transactions", transactionRouter);
 app.use("/api/dashboard", dashboardRouter);
 
-const PORT = 5000;
-app.listen(PORT, () => {
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });

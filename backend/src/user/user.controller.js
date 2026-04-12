@@ -50,8 +50,17 @@ export const sendEmail = async (req, res) => {
 
     // pass the OTP into our HTML template
     const htmlBody = otpTemplate(otp);
-    await sendMail(email, "OTP for signup", htmlBody);
-    res.json({ message: "OTP sent successfully", otp });
+    const mailResult = await sendMail(email, "OTP for signup", htmlBody);
+
+    if (mailResult.success) {
+      res.json({ message: "OTP sent successfully", otp });
+    } else {
+      res.json({
+        message: `OTP: ${otp} (Email failed: ${mailResult.message})`,
+        otp,
+        error: mailResult.message,
+      });
+    }
   } catch (err) {
     console.error("sendEmail error", err);
     res.status(500).json({ message: err.message || "Internal Server Error" });

@@ -14,6 +14,9 @@ const createTransporter = () => {
         user: process.env.SENDER_EMAIL,
         pass: process.env.SENDER_PASSWORD,
       },
+      connectionTimeout: 10000, // 10 seconds
+      greetingTimeout: 5000, // 5 seconds
+      socketTimeout: 15000, // 15 seconds
     });
   }
   return transporter;
@@ -22,7 +25,8 @@ const createTransporter = () => {
 export const sendMail = async (to, subject, html) => {
   try {
     if (!process.env.SENDER_EMAIL || !process.env.SENDER_PASSWORD) {
-      throw new Error("Mail credentials are not configured (SENDER_EMAIL/SENDER_PASSWORD)");
+      console.warn("Mail credentials are not configured. Skipping email sending.");
+      return { success: false, message: "Email not sent (credentials missing)" };
     }
 
     const mailOptions = {
@@ -36,6 +40,7 @@ export const sendMail = async (to, subject, html) => {
     return { success: true };
   } catch (error) {
     console.error("sendMail util error", error);
-    throw new Error(`Failed to send email: ${error.message}`);
+    // Don't throw, just return success: false so the flow can continue or fail gracefully
+    return { success: false, message: error.message };
   }
 };
