@@ -9,10 +9,15 @@ const createTransporter = () => {
       pass: process.env.SENDER_PASSWORD ? "[hidden]" : undefined,
     });
     transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false, // true for 465, false for other ports
       auth: {
         user: process.env.SENDER_EMAIL,
         pass: process.env.SENDER_PASSWORD,
+      },
+      tls: {
+        rejectUnauthorized: false // sometimes helps with cloud timeouts
       },
       connectionTimeout: 10000, // 10 seconds
       greetingTimeout: 5000, // 5 seconds

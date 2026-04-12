@@ -56,7 +56,7 @@ export const sendEmail = async (req, res) => {
       res.json({ message: "OTP sent successfully", otp });
     } else {
       res.json({
-        message: `OTP: ${otp} (Email failed: ${mailResult.message})`,
+        message: `OTP: ${otp} (Email failed: ${mailResult.message}). Check your SENDER_EMAIL/PASSWORD environment variables.`,
         otp,
         error: mailResult.message,
       });
