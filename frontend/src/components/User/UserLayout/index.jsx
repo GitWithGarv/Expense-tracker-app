@@ -78,9 +78,13 @@ const UserLayout = () => {
             className="border-2 border-blue-500 shadow-md mb-4"
           />
           {!collapsed && (
-            <div className="text-center">
-              <Text strong className="text-white block">{session?.fullname || "User"}</Text>
-              <Text type="secondary" className="text-xs text-blue-300">{session?.role || "Member"}</Text>
+            <div className="text-center px-4">
+              <div className="!text-white !font-bold block capitalize text-base truncate w-full">
+                {session?.fullname || "User"}
+              </div>
+              <div className="!text-white !font-bold text-xs uppercase tracking-widest mt-1">
+                {session?.role || "Member"}
+              </div>
             </div>
           )}
         </div>
@@ -103,7 +107,9 @@ const UserLayout = () => {
             className="text-lg hover:text-blue-500 transition-colors"
           />
           <div className="flex items-center gap-4">
-            <Text type="secondary" className="hidden sm:inline">Welcome back, <strong>{session?.fullname}</strong></Text>
+            <div className="hidden sm:inline text-gray-500">
+              Welcome back, <span className="!font-bold !text-gray-800 capitalize">{session?.fullname}</span>
+            </div>
             <Button 
               type="text"
               danger

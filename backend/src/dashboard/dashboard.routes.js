@@ -1,9 +1,11 @@
 import { Router } from "express";
-import { getDashboardSummary } from "./dashboard.controller.js";
+import { getDashboardSummary, getReportData } from "./dashboard.controller.js";
 import { AdminUserGuard as guard } from "../middleware/guard.middleware.js";
 
-const router = Router();
+const dashboardRouter = Router();
 
-router.get("/report", guard, getDashboardSummary);
+dashboardRouter.get("/report", guard, getDashboardSummary);
+dashboardRouter.get("/detailed-report", guard, getReportData);
+dashboardRouter.get("/test", (req, res) => res.json({ message: "Dashboard router works!" }));
 
-export default router;
+export default dashboardRouter;

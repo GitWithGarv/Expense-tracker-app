@@ -1,12 +1,3 @@
-export const fetcher = async (url) => {
-  const res = await fetch(url, {
-    method: "GET",
-    credentials: "include", // ✅ REQUIRED FOR COOKIES
-  });
+import { http } from "./http";
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch");
-  }
-
-  return res.json();
-};
+export const fetcher = (url) => http.get(url).then((res) => res.data);
